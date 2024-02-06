@@ -1,0 +1,24 @@
+
+--Create or replace schema landing;
+--Create or replace schema processed;
+--Create or replace schema consumption;
+
+create or replace view Sorted AS
+(
+select * ,
+dense_rank() over(partition by season order by net_rating desc) DR
+from nba_allseasons
+)
+
+select top 10 * from sorted;
+
+--CREATE TABLE Demo_Db.processed.nba_all_seasons AS
+--SELECT * FROM Demo_Db.landing.nba_allseasons WHERE 1 = 0;
+
+Alter table Demo_Db.processed.nba_all_seasons
+ADD COLUMN DN int
+
+insert into Demo_Db.processed.nba_all_seasons
+select * from Demo_Db.landing.sorted
+
+Select top 5 * from Demo_Db.processed.nba_all_seasons
